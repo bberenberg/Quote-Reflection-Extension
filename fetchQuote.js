@@ -79,6 +79,19 @@ function getCurrentStreak() {
     return streak;
 }
 
+function getQuoteCacheKeyForDate(date) {
+    return `quoteCache_${date}`;
+}
+
+function cacheQuoteForDate(quoteData, date) {
+    localStorage.setItem(getQuoteCacheKeyForDate(date), JSON.stringify(quoteData));
+}
+
+function getCachedQuoteForDate(date) {
+    const cachedData = localStorage.getItem(getQuoteCacheKeyForDate(date));
+    return cachedData ? JSON.parse(cachedData) : null;
+}
+
 // Function to check and apply focusMode if necessary
 function checkFocusMode() {
     if (userResponse.value.trim() !== "") {
@@ -92,51 +105,62 @@ function checkFocusMode() {
 // Main Content Loading Logic
 // ==========================
 function loadContentForDate(date) {
-    // Fetch and display the quote
-    fetch(`https://boris-quoteResponder.web.val.run?date=${date}`)
-        .then(response => response.json())
-        .then(data => {
-            const quoteContainer = document.getElementById("quoteContainer");
-            if (quoteContainer) {
-                quoteContainer.innerHTML = `
-                    <p class="quote-text">"${data.quote}"</p>
-                    <p class="quote-author">– ${data.author}</p>
-                `;
-            } else {
-                console.error("Element with id 'quoteContainer' not found!");
-            }
+    const cachedQuote = getCachedQuoteForDate(date);
 
-            // Load user's reply for the given date
-            const userResponse = document.getElementById('userResponse');
-            const wordCountEl = document.getElementById('wordCount');
-            const storedReply = getStoredReplyForDate(date);
-            if (storedReply) {
-                userResponse.value = storedReply;
-                const wordCount = storedReply.split(/\s+/).filter(Boolean).length;
-                wordCountEl.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
-            }
+    if (cachedQuote) {
+        displayQuoteContent(cachedQuote);
+    } else {
+        fetch(`https://boris-quoteResponder.web.val.run?date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                cacheQuoteForDate(data, date);
+                displayQuoteContent(data);
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+    }
+    
+    // Load user's reply for the given date
+    const userResponse = document.getElementById('userResponse');
+    const wordCountEl = document.getElementById('wordCount');
+    const storedReply = getStoredReplyForDate(date);
+    if (storedReply) {
+        userResponse.value = storedReply;
+        const wordCount = storedReply.split(/\s+/).filter(Boolean).length;
+        wordCountEl.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
+    }
 
-            checkFocusMode();
+    checkFocusMode();
 
-            // Display the reminder to the user
-            const count = getSkippedCountForDate(date);
-            const skipReminder = document.getElementById('skipReminder');
-            if (count > 0 && !storedReply && skipReminder) {
-                skipReminder.textContent = `You have skipped responding to the quote ${count} times today.`;
-            } else if (skipReminder) {
-                skipReminder.textContent = '';
-            }
+    // Display the reminder to the user
+    const count = getSkippedCountForDate(date);
+    const skipReminder = document.getElementById('skipReminder');
+    if (count > 0 && !storedReply && skipReminder) {
+        skipReminder.textContent = `You have skipped responding to the quote ${count} times today.`;
+    } else if (skipReminder) {
+        skipReminder.textContent = '';
+    }
 
-            const streak = getCurrentStreak();
-            const streakElement = document.getElementById('streakCounter');
-            if (streak > 0 && streakElement) {
-                streakElement.textContent = `Current streak: ${streak} day${streak !== 1 ? 's' : ''}`;
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching data:", error);
-        });
+    const streak = getCurrentStreak();
+    const streakElement = document.getElementById('streakCounter');
+    if (streak > 0 && streakElement) {
+        streakElement.textContent = `Current streak: ${streak} day${streak !== 1 ? 's' : ''}`;
+    }
 }
+
+function displayQuoteContent(data) {
+    const quoteContainer = document.getElementById("quoteContainer");
+    if (quoteContainer) {
+        quoteContainer.innerHTML = `
+            <p class="quote-text">"${data.quote}"</p>
+            <p class="quote-author">– ${data.author}</p>
+        `;
+    } else {
+        console.error("Element with id 'quoteContainer' not found!");
+    }
+}
+
 
 // ==========================
 // Event Listeners and Main Flow
