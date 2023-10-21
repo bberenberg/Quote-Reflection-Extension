@@ -1,4 +1,73 @@
+// ==========================
+// Debug Utilities
+// ==========================
+const DEBUG = true;
+const DEBUG_DATE_KEY = 'debugDate';
+
+function getDebugDate() {
+    const storedDate = localStorage.getItem(DEBUG_DATE_KEY);
+    return storedDate ? new Date(storedDate) : new Date();
+}
+
+function setDebugDate(date) {
+    localStorage.setItem(DEBUG_DATE_KEY, date.toISOString());
+}
+
+window.moveDateForward = function(days = 1) {
+    const debugDate = getDebugDate();
+    debugDate.setDate(debugDate.getDate() + days);
+    setDebugDate(debugDate);
+    console.log(`DEBUG: Date moved forward. Current date: ${getTodayString()}`);
+};
+
+window.moveDateBackward = function(days = 1) {
+    const debugDate = getDebugDate();
+    debugDate.setDate(debugDate.getDate() - days);
+    setDebugDate(debugDate);
+    console.log(`DEBUG: Date moved backward. Current date: ${getTodayString()}`);
+};
+
+function getTodayString() {
+    if (DEBUG) {
+        return `${getDebugDate().getFullYear()}-${String(getDebugDate().getMonth() + 1).padStart(2, '0')}-${String(getDebugDate().getDate()).padStart(2, '0')}`;
+    }
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+}
+
+// ==========================
+// User Response Utilities
+// ==========================
+function getReplyKey() {
+    return `userReply_${getTodayString()}`;
+}
+
+function storeUserReply(reply) {
+    localStorage.setItem(getReplyKey(), reply);
+}
+
+function getStoredReply() {
+    return localStorage.getItem(getReplyKey());
+}
+
+function getSkippedCountKey() {
+    return `skippedCount_${getTodayString()}`;
+}
+
+function getSkippedCount() {
+    return parseInt(localStorage.getItem(getSkippedCountKey()) || '0', 10);
+}
+
+function incrementSkippedCount() {
+    const count = getSkippedCount();
+    localStorage.setItem(getSkippedCountKey(), (count + 1).toString());
+}
+
+// ==========================
+// Event Listeners and Main Flow
+// ==========================
 document.addEventListener("DOMContentLoaded", function() {
+    // Fetch and display the quote
     fetch("https://boris-quoteResponder.web.val.run")
         .then(response => response.json())
         .then(data => {
@@ -18,126 +87,46 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const userResponse = document.getElementById('userResponse');
     const wordCountEl = document.getElementById('wordCount');
-
-    // Debug flag
-    const DEBUG = true;
-
-    // Key for storing debug date in localStorage
-    const DEBUG_DATE_KEY = 'debugDate';
-
-    function getDebugDate() {
-        const storedDate = localStorage.getItem(DEBUG_DATE_KEY);
-        if (storedDate) {
-            return new Date(storedDate);
-        }
-        return new Date();
-    }
-
-    function setDebugDate(date) {
-        localStorage.setItem(DEBUG_DATE_KEY, date.toISOString());
-    }
-
-    function getTodayString() {
-        if (DEBUG) {
-            const debugDate = getDebugDate();
-            return `${debugDate.getFullYear()}-${String(debugDate.getMonth() + 1).padStart(2, '0')}-${String(debugDate.getDate()).padStart(2, '0')}`;
-        } else {
-            const today = new Date();
-            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        }
-    }
-
-    // Debug functions to move the date
-    function moveDateForward(days = 1) {
-        const debugDate = getDebugDate();
-        debugDate.setDate(debugDate.getDate() + days);
-        setDebugDate(debugDate);
-        console.log(`DEBUG: Date moved forward. Current date: ${getTodayString()}`);
-    }
-
-    function moveDateBackward(days = 1) {
-        const debugDate = getDebugDate();
-        debugDate.setDate(debugDate.getDate() - days);
-        setDebugDate(debugDate);
-        console.log(`DEBUG: Date moved backward. Current date: ${getTodayString()}`);
-    }
-
-    function getReplyKey() {
-        return `userReply_${getTodayString()}`;
-    }
-
-    function storeUserReply(reply) {
-        localStorage.setItem(getReplyKey(), reply);
-    }
-
-    function getStoredReply() {
-        return localStorage.getItem(getReplyKey());
-    }
+    const storedReply = getStoredReply();
 
     if (userResponse) {
         // Restore user's reply for today if it exists
         const storedReply = getStoredReply();
         if (storedReply) {
             userResponse.value = storedReply;
-    
-            // Update word count based on restored reply
             const wordCount = storedReply.split(/\s+/).filter(Boolean).length;
             wordCountEl.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
         }
-    
-        // Store user's reply in local storage when they type
-        userResponse.addEventListener('input', function() {
-            const wordCount = this.value.split(/\s+/).filter(Boolean).length;
-            wordCountEl.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
 
-            // Store the reply
-            storeUserReply(this.value);
-        });
-    
-        userResponse.focus();
-    }
+    userResponse.addEventListener('input', function() {
+        const wordCount = this.value.split(/\s+/).filter(Boolean).length;
+        wordCountEl.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
+        storeUserReply(this.value);
 
-    function getSkippedCountKey() {
-        return `skippedCount_${getTodayString()}`;
-    }
-
-    function getSkippedCount() {
-        return parseInt(localStorage.getItem(getSkippedCountKey()) || '0', 10);
-    }
-
-    function incrementSkippedCount() {
-        const count = getSkippedCount();
-        localStorage.setItem(getSkippedCountKey(), (count + 1).toString());
-    }
-
-    if (userResponse) {
-        userResponse.addEventListener('input', function() {
-            const wordCount = this.value.split(/\s+/).filter(Boolean).length;
-            wordCountEl.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
-
-            const userResponses = JSON.parse(localStorage.getItem('userResponses') || '[]');
-            if (!userResponses.includes(todayString)) {
-                userResponses.push(todayString);
-            }
-            localStorage.setItem('userResponses', JSON.stringify(userResponses));
-        });
+        // Hide the skip reminder when the user starts typing
+        const skipReminder = document.getElementById('skipReminder');
+        if (skipReminder) {
+            skipReminder.style.display = 'none';
+        }
+    });
 
         userResponse.focus();
     }
 
     // Display the reminder to the user
     const count = getSkippedCount();
-    if (count > 0) {
-        const reminderElement = document.createElement('p');
-        reminderElement.textContent = `You have skipped responding to the quote ${count} times today.`;
-        reminderElement.style.color = "#ff0000";
-        reminderElement.style.marginTop = "10px";
-    
-        const responseContainer = document.getElementById('responseContainer');
-        if (responseContainer) {
-            responseContainer.appendChild(reminderElement);
-        }
+if (count > 0 && !storedReply) {  // Only show the reminder if there's a skip count and no stored reply
+    const reminderElement = document.createElement('p');
+    reminderElement.id = 'skipReminder';  // Assigning an ID for easy reference
+    reminderElement.textContent = `You have skipped responding to the quote ${count} times today.`;
+    reminderElement.style.color = "#ff0000";
+    reminderElement.style.marginTop = "10px";
+
+    const responseContainer = document.getElementById('responseContainer');
+    if (responseContainer) {
+        responseContainer.appendChild(reminderElement);
     }
+}
 
     // When page is hidden (tab is closed or navigated away)
     document.addEventListener('visibilitychange', function() {
