@@ -63,6 +63,28 @@ function incrementSkippedCount() {
     localStorage.setItem(getSkippedCountKey(), (count + 1).toString());
 }
 
+function getStoredDates() {
+    return Object.keys(localStorage).filter(key => key.startsWith('userReply_')).map(key => key.split('userReply_')[1]);
+}
+
+function getCurrentStreak() {
+    const responseDates = getStoredDates();
+    let streak = 0;
+    let currentDate = new Date(getTodayString());
+
+    while (responseDates.includes(formatDate(currentDate))) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1); // move one day back
+    }
+
+    return streak;
+}
+
+function formatDate(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+
 // ==========================
 // Event Listeners and Main Flow
 // ==========================
@@ -115,18 +137,31 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Display the reminder to the user
     const count = getSkippedCount();
-if (count > 0 && !storedReply) {  // Only show the reminder if there's a skip count and no stored reply
-    const reminderElement = document.createElement('p');
-    reminderElement.id = 'skipReminder';  // Assigning an ID for easy reference
-    reminderElement.textContent = `You have skipped responding to the quote ${count} times today.`;
-    reminderElement.style.color = "#ff0000";
-    reminderElement.style.marginTop = "10px";
+    if (count > 0 && !storedReply) {  // Only show the reminder if there's a skip count and no stored reply
+        const reminderElement = document.createElement('p');
+        reminderElement.id = 'skipReminder';  // Assigning an ID for easy reference
+        reminderElement.textContent = `You have skipped responding to the quote ${count} times today.`;
+        reminderElement.style.color = "#ff0000";
+        reminderElement.style.marginTop = "10px";
 
-    const responseContainer = document.getElementById('responseContainer');
-    if (responseContainer) {
-        responseContainer.appendChild(reminderElement);
+        const responseContainer = document.getElementById('responseContainer');
+        if (responseContainer) {
+            responseContainer.appendChild(reminderElement);
+        }
     }
-}
+
+    const streak = getCurrentStreak();
+    if (streak > 0) {
+        const streakElement = document.createElement('p');
+        streakElement.textContent = `Current streak: ${streak} day${streak !== 1 ? 's' : ''}`;
+        streakElement.style.color = "#00aa00"; // Green color for positive reinforcement
+        streakElement.style.marginTop = "10px";
+
+        const responseContainer = document.getElementById('responseContainer');
+        if (responseContainer) {
+            responseContainer.appendChild(streakElement);
+        }
+    }
 
     // When page is hidden (tab is closed or navigated away)
     document.addEventListener('visibilitychange', function() {
