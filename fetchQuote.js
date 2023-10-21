@@ -197,6 +197,13 @@ document.addEventListener("DOMContentLoaded", function() {
         if (skipReminder) {
             skipReminder.style.display = 'none';
         }
+        this.style.height = 'auto';              // Reset height to auto so it shrinks if needed
+        this.style.height = this.scrollHeight + 'px';  // Set to scrollHeight
+    });
+
+    // Initial adjust if there's content when the page loads
+    window.addEventListener('load', function() {
+        userResponse.style.height = userResponse.scrollHeight + 'px';
     });
 
     document.addEventListener('visibilitychange', function() {

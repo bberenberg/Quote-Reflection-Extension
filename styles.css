@@ -34,11 +34,12 @@ textarea#userResponse {
     line-height: 1.7; /* Relaxed line height for readability */
     border: 1px solid #ccc;
     border-radius: 6px;
-    resize: vertical;
+    resize: none;
     box-sizing: border-box;
     background-color: #fff;
     color: #333;
     border: 1px solid #ccc;
+    overflow-y: hidden; /* Hide vertical overflow */
 }
 
 textarea#userResponse:focus {
