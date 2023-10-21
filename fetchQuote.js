@@ -219,3 +219,26 @@ document.addEventListener("DOMContentLoaded", function() {
         loadContentForDate(nextDate);
     });
 });
+
+// Array of prompts
+const prompts = [
+    "What's on your mind today?",
+    "Reflect on the quote above...",
+    "Your thoughts matter. Share them here.",
+    "Ponder and share your insights.",
+    "How does this quote resonate with you?",
+    "Take a moment to reflect...",
+    "Your reflection space...",
+    "Dive deeper into your thoughts...",
+    "Share your perspective...",
+    "What did you take away from this?"
+];
+
+// Function to get a random prompt
+function getRandomPrompt() {
+    const randomIndex = Math.floor(Math.random() * prompts.length);
+    return prompts[randomIndex];
+}
+
+// Set the random prompt on page load or when the quote changes
+document.getElementById("prompt").textContent = getRandomPrompt();
