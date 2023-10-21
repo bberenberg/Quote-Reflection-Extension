@@ -2,7 +2,7 @@
 
 Daily quotes with prompts to push the user to reflect
 
-![screenshot](screenshot.png)
+![screenshot](UQRE.gif)
 
 As I am a terrible dev, this is mostly the work of ChatGPT. You can see the entire conversation at https://chat.openai.com/share/8453159a-5516-40f9-aec0-cea56e05824d
 
