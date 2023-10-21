@@ -1,5 +1,5 @@
 body {
-    font-family: 'San Francisco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;  /* Changed to Roboto for a modern look */
     background-color: #f9f9f9;
     color: #333;
     display: flex;
@@ -10,74 +10,61 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    gap: 40px; /* Provide space between the containers */
+    gap: 40px; /* Retained the space between the containers */
 }
 
 #quoteContainer, #responseContainer {
     max-width: 600px;
-    width: 100%; /* Ensure both containers take up the full available width up to the max-width */
+    width: 100%; 
     background-color: #fff;
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
     text-align: center;
-    box-sizing: border-box; /* Ensure padding and border are included in the total width */
+    box-sizing: border-box;
 }
 
 textarea#userResponse {
     width: 100%;
     height: 150px;
-    padding: 10px;
-    font-family: 'San Francisco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    padding: 15px; /* Increased padding for a spacious look */
+    font-family: inherit; /* Use the same font as the body */
     font-size: 1em;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 1px solid #e0e0e0;  /* Lightened border */
+    border-radius: 8px;  /* Increased border radius for a softer look */
     resize: vertical;
     box-sizing: border-box;
-    background-color: #fff;
-    color: #333;
-    border: 1px solid #ccc;
+    transition: border-color 0.3s;  /* Added transition for a smoother focus effect */
 }
 
+textarea#userResponse:focus {
+    border-color: #666; 
+    outline: none; /* Remove the default browser outline */
+}
 
 h1, h2 {
-    font-size: 1.5em;
-    margin-bottom: 20px;
+    font-size: 1.6em; /* Slightly increased the size */
+    margin-bottom: 24px; /* Increased spacing */
+    font-weight: 500; /* Bolder headers */
 }
 
 p {
     font-size: 1.1em;
-    line-height: 1.5;
+    line-height: 1.6; /* Increased line height for readability */
+    margin-bottom: 16px; /* Consistent spacing between paragraphs */
 }
 
 .quote-text {
-    font-size: 2em;
+    font-size: 2.2em; /* Made the quote slightly larger */
     line-height: 1.4;
-    margin-bottom: 20px;
+    margin-bottom: 24px; /* More space after the quote for clarity */
     font-weight: 500;
 }
 
 .quote-author {
-    font-size: 1.2em;
-    color: #666;
+    font-size: 1.3em; /* Slightly larger author text */
+    color: #888; /* Made it a bit lighter */
     font-style: italic;
-}
-
-#wordCount {
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #666;
-}
-
-/* Responsive Design */
-@media (max-width: 600px) {
-    .quote-text {
-        font-size: 1.5em;
-    }
-
-    .quote-author {
-        font-size: 1em;
-    }
 }
 
 #wordCountArea {
@@ -87,12 +74,34 @@ p {
 }
 
 #privacyNote {
-    font-size: 0.8em;
+    font-size: 0.85em;
     color: #888;
     margin-top: 5px;
     text-align: center;
+    padding: 10px;
+    background: rgba(0,0,0,0.03);
+    border-radius: 8px;
+    display: flex; /* Adjusted to flex for better alignment */
+    align-items: center; /* Vertically align the content in the center */
+    justify-content: center; /* Horizontally align the content in the center */
 }
 
+#privacyNote::before {
+    content: '\1F50F'; 
+    margin-right: 5px;
+    font-size: 1.2em; /* Slightly larger for emphasis */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .quote-text {
+        font-size: 1.8em; /* Reduced the size for mobile readability */
+    }
+
+    .quote-author {
+        font-size: 1.1em; 
+    }
+}
 
 /* Dark Mode styles */
 @media (prefers-color-scheme: dark) {
@@ -110,10 +119,16 @@ p {
     }
 
     textarea#userResponse {
-        background-color: #1f1f1f;  /* slightly lighter than main dark background */
-        color: #e0e0e0;  /* same as main content color in dark mode */
-        border: 1px solid #2a2a2a;  /* subtle border color */
-        /* If you have a placeholder: */
-        /* placeholder: rgba(224, 224, 224, 0.5);  // slightly transparent version of main content color */
+        background-color: #1f1f1f; 
+        color: #e0e0e0; 
+        border: 1px solid #2a2a2a; 
+    }
+
+    #privacyNote {
+        background: rgba(255,255,255,0.05); /* Adjusted for dark mode */
+    }
+
+    #privacyNote::before {
+        color: #e0e0e0; /* Match the color scheme of dark mode */
     }
 }
