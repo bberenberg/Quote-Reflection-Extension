@@ -26,16 +26,18 @@ body {
 }
 
 textarea#userResponse {
-    width: 100%;
-    height: 150px;
-    padding: 15px; /* Increased padding for a spacious look */
-    font-family: inherit; /* Use the same font as the body */
-    font-size: 1em;
-    border: 1px solid #e0e0e0;  /* Lightened border */
-    border-radius: 8px;  /* Increased border radius for a softer look */
+    font-family: 'Georgia', serif; /* or 'Roboto', sans-serif; if using web fonts */
+    font-size: 1.1em; /* Increase font size */
+    line-height: 1.6; /* Improve readability */
+    padding: 15px; /* More space inside the textarea */
+    color: #333; /* Ensure good contrast */
+    background-color: #fff; 
+    border: 1px solid #ccc;
+    border-radius: 6px;
     resize: vertical;
+    width: 100%;
+    height: 200px;
     box-sizing: border-box;
-    transition: border-color 0.3s;  /* Added transition for a smoother focus effect */
 }
 
 textarea#userResponse:focus {
@@ -135,6 +137,13 @@ body.focusMode textarea#userResponse {
     height: 200px; /* Increase the size of the typing area */
 }
 
+body.focusMode h2 {
+    opacity: 0.5; /* or any value less than 1 for reduced visibility */
+    transition: opacity 0.3s ease; /* smooth transition */
+    transform: scale(0.8); /* Shrink the text */
+}
+
+
 /* Dark Mode styles */
 @media (prefers-color-scheme: dark) {
     body {
@@ -151,7 +160,7 @@ body.focusMode textarea#userResponse {
     }
 
     textarea#userResponse {
-        background-color: #1f1f1f; 
+        background-color: #1f1f1f;  
         color: #e0e0e0; 
         border: 1px solid #2a2a2a; 
     }
