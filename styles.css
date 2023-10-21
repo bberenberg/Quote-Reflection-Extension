@@ -22,6 +22,7 @@ body {
     box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
     text-align: center;
     box-sizing: border-box;
+    transition: all 0.5s ease;
 }
 
 textarea#userResponse {
@@ -122,6 +123,16 @@ p {
     .quote-author {
         font-size: 1.1em; 
     }
+}
+
+/* Styles when focusMode is activated */
+body.focusMode #quoteContainer {
+    transform: scale(0.8); /* Shrink the quote */
+    opacity: 0.5; /* Make it more transparent */
+}
+
+body.focusMode textarea#userResponse {
+    height: 200px; /* Increase the size of the typing area */
 }
 
 /* Dark Mode styles */

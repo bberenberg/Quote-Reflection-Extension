@@ -79,6 +79,15 @@ function getCurrentStreak() {
     return streak;
 }
 
+// Function to check and apply focusMode if necessary
+function checkFocusMode() {
+    if (userResponse.value.trim() !== "") {
+        document.body.classList.add('focusMode');
+    } else {
+        document.body.classList.remove('focusMode');
+    }
+}
+
 // ==========================
 // Main Content Loading Logic
 // ==========================
@@ -106,6 +115,8 @@ function loadContentForDate(date) {
                 const wordCount = storedReply.split(/\s+/).filter(Boolean).length;
                 wordCountEl.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
             }
+
+            checkFocusMode();
 
             // Display the reminder to the user
             const count = getSkippedCountForDate(date);
@@ -152,4 +163,8 @@ document.addEventListener("DOMContentLoaded", function() {
             incrementSkippedCountForDate(getTodayString());
         }
     });
+
+    // Check on user input
+    userResponse.addEventListener('input', checkFocusMode);
+
 });
