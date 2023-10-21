@@ -1,13 +1,11 @@
-# "chrome_url_overrides"
+# Untitled Quote Reflection Extension
 
-This sample demonstrates the ` "chrome_url_overrides"` manifest key by replacing the user's default New Tab page with a new html file.
+Daily quotes with prompts to push the user to reflect
 
-## Overview
+![screenshot](screenshot.png)
 
-The extension calls ` "chrome_url_overrides"` and its parameter `"newtab"` to replace the New Tab page with blank.html.
+As I am a terrible dev, this is mostly the work of ChatGPT. You can see the entire conversation at https://chat.openai.com/share/8453159a-5516-40f9-aec0-cea56e05824d
 
-## Running this extension
+## Backend
 
-1. Clone this repository.
-2. Load this directory in Chrome as an [unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked).
-3. Open a new tab while the extension is enabled.
+I needed a simple backend so I used val.town for prototyping purposes. You can see the full code at https://www.val.town/v/boris.quoteResponder
