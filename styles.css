@@ -144,16 +144,21 @@ body.focusMode h2 {
     transform: scale(0.8); /* Shrink the text */
 }
 
-/* Navgiation */
+/* Navigation */
 #dateNavigation {
     display: flex;
+    align-items: center; /* This ensures vertical centering of all child elements */
     justify-content: center;
     gap: 20px;
     margin-top: 15px;
 }
 
+.arrow, .dateLabel {
+    font-size: 1.1em; /* Consistent font size */
+    line-height: 1.4; /* Consistent vertical spacing */
+}
+
 .arrow {
-    font-size: 1.1em;
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.3s ease;
@@ -169,8 +174,8 @@ body.focusMode h2 {
 
 .dateLabel {
     color: #888;
-    font-size: 0.9em;
 }
+
 
 
 /* Dark Mode styles */
