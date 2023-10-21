@@ -80,6 +80,20 @@ p {
     }
 }
 
+#wordCountArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#privacyNote {
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 5px;
+    text-align: center;
+}
+
+
 /* Dark Mode styles */
 @media (prefers-color-scheme: dark) {
     body {
