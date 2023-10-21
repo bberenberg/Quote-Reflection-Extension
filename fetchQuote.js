@@ -1,44 +1,4 @@
 // ==========================
-// Debug Utilities
-// ==========================
-const DEBUG = true;
-const DEBUG_DATE_KEY = 'debugDate';
-
-function getDebugDate() {
-    const storedDate = localStorage.getItem(DEBUG_DATE_KEY);
-    return storedDate ? new Date(storedDate) : new Date();
-}
-
-function setDebugDate(date) {
-    localStorage.setItem(DEBUG_DATE_KEY, date.toISOString());
-}
-
-window.moveDateForward = function(days = 1) {
-    const debugDate = getDebugDate();
-    debugDate.setDate(debugDate.getDate() + days);
-    setDebugDate(debugDate);
-    loadContentForDate(getTodayString()); // Reload the content for the new date
-};
-
-window.moveDateBackward = function(days = 1) {
-    const debugDate = getDebugDate();
-    debugDate.setDate(debugDate.getDate() - days);
-    setDebugDate(debugDate);
-    loadContentForDate(getTodayString()); // Reload the content for the new date
-};
-
-function getTodayString() {
-    if (DEBUG) {
-        return formatDate(getDebugDate());
-    }
-    return formatDate(new Date());
-}
-
-function formatDate(date) {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-}
-
-// ==========================
 // User Response Utilities
 // ==========================
 function getReplyKeyForDate(date) {
@@ -69,11 +29,11 @@ function incrementSkippedCountForDate(date) {
 function getCurrentStreak() {
     const responseDates = Object.keys(localStorage).filter(key => key.startsWith('userReply_')).map(key => key.split('userReply_')[1]);
     let streak = 0;
-    let currentDate = new Date(getTodayString());
+    let currentDate = new Date();
 
     while (responseDates.includes(formatDate(currentDate))) {
         streak++;
-        currentDate.setDate(currentDate.getDate() - 1); // move one day back
+        currentDate.setDate(currentDate.getDate() - 1);
     }
 
     return streak;
@@ -92,24 +52,37 @@ function getCachedQuoteForDate(date) {
     return cachedData ? JSON.parse(cachedData) : null;
 }
 
-// Function to check and apply focusMode if necessary
-function checkFocusMode() {
-    if (userResponse.value.trim() !== "") {
-        document.body.classList.add('focusMode');
-    } else {
-        document.body.classList.remove('focusMode');
-    }
-}
-
 function isToday(date) {
     const today = new Date();
     return date.toDateString() === today.toDateString();
 }
 
 function getDateWithOffset(offset) {
-    const date = getDebugDate();
+    const date = new Date();
     date.setDate(date.getDate() + offset);
     return formatDate(date);
+}
+
+function formatDate(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+// ==========================
+// UI Update Functions
+// ==========================
+function updateWordCount() {
+    const userResponse = document.getElementById('userResponse');
+    const wordCountEl = document.getElementById('wordCount');
+    const wordCount = userResponse.value.split(/\s+/).filter(Boolean).length;
+    wordCountEl.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
+}
+
+function checkFocusMode() {
+    if (document.getElementById('userResponse').value.trim() !== "") {
+        document.body.classList.add('focusMode');
+    } else {
+        document.body.classList.remove('focusMode');
+    }
 }
 
 function updateDateLabel(date) {
@@ -117,40 +90,8 @@ function updateDateLabel(date) {
     currentDateLabel.textContent = date;
 }
 
-
-// ==========================
-// Main Content Loading Logic
-// ==========================
-function loadContentForDate(date) {
-    const cachedQuote = getCachedQuoteForDate(date);
-
-    if (cachedQuote) {
-        displayQuoteContent(cachedQuote);
-    } else {
-        fetch(`https://boris-quoteResponder.web.val.run?date=${date}`)
-            .then(response => response.json())
-            .then(data => {
-                cacheQuoteForDate(data, date);
-                displayQuoteContent(data);
-            })
-            .catch(error => {
-                console.error("Error fetching data:", error);
-            });
-    }
-    
-    // Load user's reply for the given date
-    const userResponse = document.getElementById('userResponse');
-    const wordCountEl = document.getElementById('wordCount');
+function updateSkipReminder(date) {
     const storedReply = getStoredReplyForDate(date);
-    if (storedReply) {
-        userResponse.value = storedReply;
-        const wordCount = storedReply.split(/\s+/).filter(Boolean).length;
-        wordCountEl.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
-    }
-
-    checkFocusMode();
-
-    // Display the reminder to the user
     const count = getSkippedCountForDate(date);
     const skipReminder = document.getElementById('skipReminder');
     if (count > 0 && !storedReply && skipReminder) {
@@ -158,13 +99,45 @@ function loadContentForDate(date) {
     } else if (skipReminder) {
         skipReminder.textContent = '';
     }
+}
 
+function updateStreakCounter() {
     const streak = getCurrentStreak();
     const streakElement = document.getElementById('streakCounter');
     if (streak > 0 && streakElement) {
         streakElement.textContent = `Current streak: ${streak} day${streak !== 1 ? 's' : ''}`;
     }
+}
 
+function updateForwardArrowVisibility(date) {
+    const forwardArrow = document.getElementById('forwardArrow');
+    if (isToday(new Date(date))) {
+        forwardArrow.setAttribute('hidden', true);
+    } else {
+        forwardArrow.removeAttribute('hidden');
+    }
+}
+
+function updateUIWithQuoteData(data, date) {
+    const quoteContainer = document.getElementById("quoteContainer");
+    quoteContainer.innerHTML = `
+        <p class="quote-text">"${data.quote}"</p>
+        <p class="quote-author">– ${data.author}</p>
+    `;
+
+    const userResponse = document.getElementById('userResponse');
+    const storedReply = getStoredReplyForDate(date);
+    userResponse.value = storedReply || '';
+
+    updateWordCount();
+    checkFocusMode();
+    updateDateLabel(date);
+    updateSkipReminder(date);
+    updateStreakCounter();
+    updateForwardArrowVisibility(date);
+}
+
+function postLoadUIUpdates(date) {
     // Show or hide the forward arrow based on the current date
     if (isToday(new Date(date))) {
         forwardArrow.setAttribute('hidden', true);
@@ -175,68 +148,74 @@ function loadContentForDate(date) {
     updateDateLabel(date);
 }
 
-function displayQuoteContent(data) {
-    const quoteContainer = document.getElementById("quoteContainer");
-    if (quoteContainer) {
-        quoteContainer.innerHTML = `
-            <p class="quote-text">"${data.quote}"</p>
-            <p class="quote-author">– ${data.author}</p>
-        `;
-    } else {
-        console.error("Element with id 'quoteContainer' not found!");
-    }
+let currentDisplayedDate = new Date();
+
+function getDateWithOffset(offset) {
+    const date = new Date(currentDisplayedDate);
+    date.setDate(date.getDate() + offset);
+    return formatDate(date);
 }
 
+function loadContentForDate(date) {
+    const cachedQuote = getCachedQuoteForDate(date);
+
+    if (cachedQuote) {
+        updateUIWithQuoteData(cachedQuote, date);
+    } else {
+        fetch(`https://boris-quoteResponder.web.val.run?date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                cacheQuoteForDate(data, date);
+                updateUIWithQuoteData(data, date);
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+    }
+}
 
 // ==========================
 // Event Listeners and Main Flow
 // ==========================
 document.addEventListener("DOMContentLoaded", function() {
-    loadContentForDate(getTodayString()); // Load content for the current date on initial load
+
+    const backArrow = document.getElementById('backArrow');
+    const forwardArrow = document.getElementById('forwardArrow');
+
+    // Initialize with the current date
+    updateDateLabel(formatDate(currentDisplayedDate));
+    forwardArrow.setAttribute('hidden', true);
+
+    loadContentForDate(formatDate(currentDisplayedDate));
 
     const userResponse = document.getElementById('userResponse');
     userResponse.addEventListener('input', function() {
-        const wordCount = this.value.split(/\s+/).filter(Boolean).length;
-        document.getElementById('wordCount').textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
-        storeUserReplyForDate(this.value, getTodayString());
+        updateWordCount();
+        storeUserReplyForDate(this.value, formatDate(currentDisplayedDate));
 
-        // Hide the skip reminder when the user starts typing
         const skipReminder = document.getElementById('skipReminder');
         if (skipReminder) {
             skipReminder.style.display = 'none';
         }
     });
 
-    // When page is hidden (tab is closed or navigated away)
     document.addEventListener('visibilitychange', function() {
         if (document.visibilityState === 'hidden' && userResponse.value.trim() === "") {
-            incrementSkippedCountForDate(getTodayString());
+            incrementSkippedCountForDate(formatDate(currentDisplayedDate));
         }
     });
 
-    // Check on user input
     userResponse.addEventListener('input', checkFocusMode);
 
-    const backArrow = document.getElementById('backArrow');
-    const forwardArrow = document.getElementById('forwardArrow');
-    
     backArrow.addEventListener('click', () => {
-        const previousDate = getDateWithOffset(-1);  // get previous date
-        setDebugDate(new Date(previousDate));  // update debug date
-        loadContentForDate(previousDate);  // load content for that date
+        const previousDate = getDateWithOffset(-1);
+        currentDisplayedDate = new Date(previousDate);
+        loadContentForDate(previousDate);
     });
 
     forwardArrow.addEventListener('click', () => {
-        const nextDate = getDateWithOffset(1);  // get next date
-        setDebugDate(new Date(nextDate));  // update debug date
-        loadContentForDate(nextDate);  // load content for that date
+        const nextDate = getDateWithOffset(1);
+        currentDisplayedDate = new Date(nextDate);
+        loadContentForDate(nextDate);
     });
-
-    // Hide the forward arrow if it's today
-    if (isToday(getDebugDate())) {
-        forwardArrow.setAttribute('hidden', true);
-    }
-
-    updateDateLabel(getTodayString());
-
 });

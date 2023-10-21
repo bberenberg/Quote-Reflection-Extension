@@ -153,7 +153,7 @@ body.focusMode h2 {
 }
 
 .arrow {
-    font-size: 1.5em;
+    font-size: 1.1em;
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.3s ease;
