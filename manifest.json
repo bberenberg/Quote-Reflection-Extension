@@ -1,0 +1,14 @@
+{
+  "name": "Blank new tab page",
+  "description": "Uses the \"chrome_url_overrides\" manifest key by replacing the user's default new tab page with a new html file.",
+  "version": "0.3",
+  "manifest_version": 3,
+  "incognito": "split",
+  "chrome_url_overrides": {
+      "newtab": "body.html"
+  },
+  "permissions": ["activeTab", "https://boris-quoteResponder.web.val.run/"],
+  "content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self';"
+  }
+}
