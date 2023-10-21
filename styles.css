@@ -34,6 +34,9 @@ textarea#userResponse {
     border-radius: 6px;
     resize: vertical;
     box-sizing: border-box;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
 }
 
 
@@ -90,5 +93,13 @@ p {
 
     .quote-author {
         color: #a0a0a0;
+    }
+
+    textarea#userResponse {
+        background-color: #1f1f1f;  /* slightly lighter than main dark background */
+        color: #e0e0e0;  /* same as main content color in dark mode */
+        border: 1px solid #2a2a2a;  /* subtle border color */
+        /* If you have a placeholder: */
+        /* placeholder: rgba(224, 224, 224, 0.5);  // slightly transparent version of main content color */
     }
 }
