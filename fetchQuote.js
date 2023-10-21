@@ -101,6 +101,23 @@ function checkFocusMode() {
     }
 }
 
+function isToday(date) {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+}
+
+function getDateWithOffset(offset) {
+    const date = getDebugDate();
+    date.setDate(date.getDate() + offset);
+    return formatDate(date);
+}
+
+function updateDateLabel(date) {
+    const currentDateLabel = document.getElementById('currentDate');
+    currentDateLabel.textContent = date;
+}
+
+
 // ==========================
 // Main Content Loading Logic
 // ==========================
@@ -147,6 +164,15 @@ function loadContentForDate(date) {
     if (streak > 0 && streakElement) {
         streakElement.textContent = `Current streak: ${streak} day${streak !== 1 ? 's' : ''}`;
     }
+
+    // Show or hide the forward arrow based on the current date
+    if (isToday(new Date(date))) {
+        forwardArrow.setAttribute('hidden', true);
+    } else {
+        forwardArrow.removeAttribute('hidden');
+    }
+
+    updateDateLabel(date);
 }
 
 function displayQuoteContent(data) {
@@ -190,5 +216,27 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Check on user input
     userResponse.addEventListener('input', checkFocusMode);
+
+    const backArrow = document.getElementById('backArrow');
+    const forwardArrow = document.getElementById('forwardArrow');
+    
+    backArrow.addEventListener('click', () => {
+        const previousDate = getDateWithOffset(-1);  // get previous date
+        setDebugDate(new Date(previousDate));  // update debug date
+        loadContentForDate(previousDate);  // load content for that date
+    });
+
+    forwardArrow.addEventListener('click', () => {
+        const nextDate = getDateWithOffset(1);  // get next date
+        setDebugDate(new Date(nextDate));  // update debug date
+        loadContentForDate(nextDate);  // load content for that date
+    });
+
+    // Hide the forward arrow if it's today
+    if (isToday(getDebugDate())) {
+        forwardArrow.setAttribute('hidden', true);
+    }
+
+    updateDateLabel(getTodayString());
 
 });
