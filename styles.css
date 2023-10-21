@@ -48,6 +48,13 @@ h1, h2 {
     font-weight: 500; /* Bolder headers */
 }
 
+h2 {
+    font-size: 1.4em; /* Slightly smaller */
+    margin-bottom: 15px;
+    color: #555; /* Darker color */
+    font-weight: 500; /* Medium font weight */
+}
+
 p {
     font-size: 1.1em;
     line-height: 1.6; /* Increased line height for readability */
@@ -73,6 +80,13 @@ p {
     align-items: center;
 }
 
+#wordCount {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #888; /* Darker color for subtlety */
+    font-weight: 400; /* Normal font weight */
+}
+
 #privacyNote {
     font-size: 0.85em;
     color: #888;
@@ -90,6 +104,13 @@ p {
     content: '\1F50F'; 
     margin-right: 5px;
     font-size: 1.2em; /* Slightly larger for emphasis */
+}
+
+/* Adjustments for the memo symbol in light mode */
+#memoSymbol {
+    font-size: 1.2em; /* Adjust the size so that it's closer to the surrounding text size */
+    vertical-align: middle; /* Center the symbol vertically relative to the surrounding text */
+    opacity: 0.8; /* Slightly reduce the intensity */
 }
 
 /* Responsive Design */
@@ -130,5 +151,18 @@ p {
 
     #privacyNote::before {
         color: #e0e0e0; /* Match the color scheme of dark mode */
+    }
+
+    #memoSymbol {
+        color: #a0a0a0; /* Adjust the color to make it less bright in dark mode */
+        opacity: 0.9; /* Adjust opacity as per preference */
+    }
+
+    #wordCount {
+        color: #a0a0a0;
+    }
+
+    h2 {
+        color: #b0b0b0;
     }
 }
